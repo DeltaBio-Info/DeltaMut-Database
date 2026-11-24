@@ -2,12 +2,10 @@
 
 **[Launch DeltaMut Web Interface](https://deltamut.brc.hu/)**
 
-# Part I — Structure Prediction
-
-This part describes the computational workflow used to generate predicted protein structures for the DeltaMut database.
-
-# DeltaMut Protein Structure Database Acess and Download
+# DeltaMut Protein Structure Database Access and Download
 This repository contains scripts and instructions to generate and retrieve AlphaFold2-modeled protein structures featured in the DeltaMut database. It also provides utilities and detailed steps to batch-download all dataset files from the ARP Research Data Repository.
+
+**For large-scale download plans and any questions, please contact Dr. Erda Qorri at erda.qorri@brc.hu**
 
 # DeltaMut Overview
 The DeltaMut database contains high-quality protein structures generated with ParaFold, an HPC-friendly implementation of AlphaFold2. The collection consists of both wild-type and variant protein structures from a curated set of missense variants retrieved from Humsavar.
@@ -20,10 +18,14 @@ This repository provides scripts for:
 1. Structure Prediction: Modeling of wild-type and variant protein structures using ParaFold.
 
 2. Data Retrieval:
-  - Download protein-specific dataset or all the datasets by specifying protein acessions or using pattern matching.
-  - Retrieve a tab-delimited file listing all dataset identifiers, protein codes, and their corresponding private URLs.
-  - Download datasets directly from the provided private URLs.
+  - Download protein-specific dataset by specifying protein accessions or using pattern matching.
+  - Download all the datasets present in the database.
 
+3. Feature extraction: Extracting structural features for the characterization of wild-type and mutant protein structures.
+
+# Part I — Structure Prediction
+
+This part describes the computational workflow used to generate predicted protein structures for the DeltaMut database.
 ---
 🖥️ Protein Structure Generation Pipeline
 
@@ -68,28 +70,12 @@ bash DeltaMut_Database/ARP_Download_Files/download.sh -g 'B3EW[A-Z]*'
 ```bash
 bash DeltaMut_Database/ARP_Download_Files/download.sh
 ```
+
+More information can be found at the [ARP site](https://repo.researchdata.hu/dataset.xhtml?persistentId=hdl:21.15109/ARP/PK0GMK).
+
 ---
-## Accessing Data via Private URLs (Repository in Private Mode)
 
-> **Technical Note:** Applicable only during the DeltaMut Database submission and review process.
-
-While the DeltaMut repository is in private mode, the data can be accessed through private URLs listed in the file:
-```text
-DeltaMut_Database/ARP_Download_Files/private_urls.tsv
-```
-Use the following one-liner commands to retrieve data from these URLs:
-
-> **Important:** Accessing these URLs while the DeltaMut dataverse is in private mode requires an authorized *API_TOKEN*, which must be requested from the dataset maintainers prior to dataverse publication.
-
-```bash
-# Download ten random datasets
-cat private_urls.tsv | cut -f3 | shuf | head | xargs bash DeltaMut_Database/ARP_Download_Files/download_private.sh
-
-# Download all the datasets using private URLs:
-cat private_urls.tsv | xargs bash DeltaMut_Database/ARP_Download_Files/download_private.sh
-```
-
-> **⚠️ Caution:** The full dataset size exceed 60 TB. Please ensure you have sufficient storage capacity and bandwidth before downloading. For large-scale download plans and any questions, contact Erda Qorri at erda.qorri@brc.hu
+> **⚠️ Caution:** The full dataset size exceeds 60 TB. Please ensure you have sufficient storage capacity and bandwidth before downloading.
 
 
 # Part II — Structural Feature Extraction
@@ -100,7 +86,7 @@ This part describes the four structural features implemented for the characteriz
 
 The generated wild type and mutated protein structures were processed to develop five features: Alpha Carbon Distance, Delta Alpha Carbon pLDDT, Delta SASA, MJ Potential Mutant, and dRMS Local. 
 Each feature is implemented as a standalone **R script**. The scripts can be found in the `Features` directory.
-*In the future I will finish a CLI version of the features!*
+*In the future I will finish a CLI version of the features! Right now, they only work from RStudio as functions!*
 
 If you run the features using the test files provided here you can compare the results with the ones here: *Data/Features_Test_Results/features_test_results.xls*.
 
@@ -154,11 +140,10 @@ calculate_delta_sasa("path/to/wt.pdb",
                       max_sasa_value)
 ```
 
-### **4. MJ Potential Mutant**
+### **4. Miyazawa-Jernigan (MJ) Potential Mutant**
 
-- **Input:**  
 - **Script:** `Features/MJ_Potential_Mutant.R`
-- **Description:** Calculates the Miyazawa-Jernigan (MJ) potential values for residue0residue interactions in the wild-type and mutant structures.
+- **Description:** Calculates the MJ potential values for residue0residue interactions in the wild-type and mutant structures.
 - **Input:**  
   - Wild-type avg_side_chain_table (csv)
   - Mutant avg_side_chain_table (csv)
